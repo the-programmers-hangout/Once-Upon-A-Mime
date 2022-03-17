@@ -56,7 +56,7 @@ export class MessageListener extends Listener {
                         if (error) throw error;
 
                         const uploadedUrl = uploadFile(body).then(url => {
-                            msgChannel.send(`Uploaded to Pastecord: ${url}`);
+                            msgChannel.send(`Hey <@${author}>, your file has been uploaded to Pastecord: ${url}`);
                             client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>. File uploaded to Pastecord: ${url}`);
                         });
                     })
@@ -67,7 +67,7 @@ export class MessageListener extends Listener {
                 if (!whitelistedMimes.includes(mimeType)) {
                     const msgChannel = message.channel;
                     const author = message.author.id;
-                    msgChannel.send(`Please don't upload that file type here. <@${author}>`)
+                    msgChannel.send(`Please don't upload that file type here, <@${author}>.`)
                     message.delete().then(() => {
                         client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>.`)
                     });
