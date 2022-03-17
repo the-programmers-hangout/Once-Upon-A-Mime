@@ -24,4 +24,5 @@ Configuration commands will be added in the future. As of now, you will have to 
             "application/javascript"
         ]
     }
-}```
+}
+```
