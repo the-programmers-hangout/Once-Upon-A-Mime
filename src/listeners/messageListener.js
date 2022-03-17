@@ -21,22 +21,31 @@ export class MessageListener extends Listener {
         for (const attachment of attachments) {
             const fileName = attachment.name;
             const fileUrl = attachment.url;
-            var mimeType = (await checkMimeType(fileUrl));
-            if (!mimeType) {
-                mimeType = attachment.contentType;
-                const index = mimeType.indexOf(';');
-                if (index != -1) {
-                    mimeType = mimeType.substring(0, index);
-                }
+            console.log(fileUrl);
+            // var mimeType = await (await checkMimeType(fileUrl)) === 'undefined' ? attachment.contentType.substring(0, mimeType.indexOf(';')) : (await checkMimeType(fileUrl)).mime;
+
+            console.log(await checkMimeType(fileUrl))
+            if (!(await checkMimeType(fileUrl))) {
+                var mimeType = attachment.contentType.substring(0, attachment.contentType.indexOf(';'));
+            } else {
+                var mimeType = (await checkMimeType(fileUrl)).mime;
             }
+
+            console.log(mimeType);
 
             fs.readFile('./config.json', function(err, data) {
                 if (err) throw err;
 
                 const config = JSON.parse(data);
-                const blacklistedMimes = config[message.guildId].blacklist;
+                if (!config[message.guildId]) {
+                    message.channel.send("Bot not setup. Refer to: <https://github.com/DracTheDino/Mimey#readme>");
+                    return;
+                }
+
                 const logChannel = config[message.guildId].logChannel;
+                const whitelistedMimes = config[message.guildId].whitelist;
                 const uploadableMimes = config[message.guildId].uploadableMimes;
+                console.log(whitelistedMimes);
 
                 if (uploadableMimes.includes(mimeType)) {
                     const msgChannel = message.channel;
@@ -51,17 +60,37 @@ export class MessageListener extends Listener {
                             client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>. File uploaded to Pastecord: ${url}`);
                         });
                     })
+
+                    return;
                 }
 
-                for (const blacklistedMime of blacklistedMimes) {
-                    if (mimeType === blacklistedMime) {
-                        message.delete()
-                            .then(msg => {
-                                client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${message.author.id}> in <#${message.channel.id}>.`)
-                            })
-                            .catch(console.error);
-                    }
+                if (!whitelistedMimes.includes(mimeType)) {
+                    const msgChannel = message.channel;
+                    const author = message.author.id;
+                    msgChannel.send(`Please don't upload that file type here. <@${author}>`)
+                    message.delete().then(() => {
+                        client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>.`)
+                    });
+                    return;
                 }
+
+                // if (whitelistedMimes.includes(mimeType) !== true) {
+                //     message.delete()
+                //         .then(msg => {
+                //             client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${message.author.id}> in <#${message.channel.id}>.`)
+                //         })
+                //        .catch(console.error);
+                // }
+
+                // for (const whitelistedMime of whitelistedMimes) {
+                //     if (mimeType !== whitelistedMime) {
+                //         message.delete()
+                //             .then(msg => {
+                //                 client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${message.author.id}> in <#${message.channel.id}>.`)
+                //             })
+                //             .catch(console.error);
+                //     }
+                // }
             });
         }
     }
