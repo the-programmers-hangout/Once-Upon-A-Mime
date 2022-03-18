@@ -15,6 +15,8 @@ export class MessageListener extends Listener {
     }
 
     async run(message) {
+        if (message.author.bot) return;
+        
         // message.attachments is Collection<Snowflake, MessageAttachment>
         const attachments = Array.from(message.attachments.values());
         const msgChannel = message.channel;

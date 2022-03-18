@@ -1,4 +1,4 @@
-import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
+import {SubCommandPluginCommand} from '@sapphire/plugin-subcommands';
 import fs from 'fs';
 
 export class Config extends SubCommandPluginCommand {
