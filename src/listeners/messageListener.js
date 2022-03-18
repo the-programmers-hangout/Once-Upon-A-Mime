@@ -17,81 +17,63 @@ export class MessageListener extends Listener {
     async run(message) {
         // message.attachments is Collection<Snowflake, MessageAttachment>
         const attachments = Array.from(message.attachments.values());
+        const msgChannel = message.channel;
+        const author = message.author.id;
+
+        // helpful for multiple attachments
+        var canDeleteMessage = false;
         
+        // loop through every attachment in message
         for (const attachment of attachments) {
             const fileName = attachment.name;
             const fileUrl = attachment.url;
-            console.log(fileUrl);
-            // var mimeType = await (await checkMimeType(fileUrl)) === 'undefined' ? attachment.contentType.substring(0, mimeType.indexOf(';')) : (await checkMimeType(fileUrl)).mime;
 
-            console.log(await checkMimeType(fileUrl))
+            // check for mime type
             if (!(await checkMimeType(fileUrl))) {
                 var mimeType = attachment.contentType.substring(0, attachment.contentType.indexOf(';'));
             } else {
                 var mimeType = (await checkMimeType(fileUrl)).mime;
             }
 
-            console.log(mimeType);
+            // read configuration file
+            const configFile = fs.readFileSync('./config.json', 'utf-8');
+            const config = JSON.parse(configFile);
 
-            fs.readFile('./config.json', function(err, data) {
-                if (err) throw err;
+            // handle guild which has not been setup
+            if (!config[message.guildId]) {
+                message.channel.send("Bot not setup. Refer to: <https://github.com/DracTheDino/Mimey#readme>");
+                return;
+            }
 
-                const config = JSON.parse(data);
-                if (!config[message.guildId]) {
-                    message.channel.send("Bot not setup. Refer to: <https://github.com/DracTheDino/Mimey#readme>");
-                    return;
-                }
+            const logChannel = config[message.guildId].logChannel;
+            const whitelistedMimes = config[message.guildId].whitelist;
+            const uploadableMimes = config[message.guildId].uploadableMimes;
 
-                const logChannel = config[message.guildId].logChannel;
-                const whitelistedMimes = config[message.guildId].whitelist;
-                const uploadableMimes = config[message.guildId].uploadableMimes;
-                console.log(whitelistedMimes);
+            // check if mimeType is on the uploadableMimes list
+            if (uploadableMimes.includes(mimeType)) {
+                canDeleteMessage = true;
 
-                if (uploadableMimes.includes(mimeType)) {
-                    const msgChannel = message.channel;
-                    const author = message.author.id;
-                    message.delete();
+                request.get(fileUrl, function(error, response, body) {
+                    if (error) throw error;
 
-                    request.get(fileUrl, function(error, response, body) {
-                        if (error) throw error;
-
-                        const uploadedUrl = uploadFile(body).then(url => {
-                            msgChannel.send(`Hey <@${author}>, your file has been uploaded to Pastecord: ${url}`);
-                            client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>. File uploaded to Pastecord: ${url}`);
-                        });
-                    })
-
-                    return;
-                }
-
-                if (!whitelistedMimes.includes(mimeType)) {
-                    const msgChannel = message.channel;
-                    const author = message.author.id;
-                    msgChannel.send(`Please don't upload that file type here, <@${author}>.`)
-                    message.delete().then(() => {
-                        client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>.`)
+                    uploadFile(body).then(url => {
+                        msgChannel.send(`Hey <@${author}>, your file has been uploaded to Pastecord: ${url}`);
+                        client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>. File uploaded to Pastecord: ${url}`);
                     });
-                    return;
-                }
+                })
+            } 
+            // if that fails, check if its whitelisted
+            else if (!whitelistedMimes.includes(mimeType)) {
+                canDeleteMessage = true;
 
-                // if (whitelistedMimes.includes(mimeType) !== true) {
-                //     message.delete()
-                //         .then(msg => {
-                //             client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${message.author.id}> in <#${message.channel.id}>.`)
-                //         })
-                //        .catch(console.error);
-                // }
+                msgChannel.send(`Hey <@${author}>, please don't upload \`${mimeType}\` files on this server.`)
+                client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>.`)
+            }
+        }
 
-                // for (const whitelistedMime of whitelistedMimes) {
-                //     if (mimeType !== whitelistedMime) {
-                //         message.delete()
-                //             .then(msg => {
-                //                 client.channels.cache.get(logChannel).send(`Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${message.author.id}> in <#${message.channel.id}>.`)
-                //             })
-                //             .catch(console.error);
-                //     }
-                // }
-            });
+        // you had two chances, attachment, and you failed both chances... forever begone!
+        if (canDeleteMessage == true) {
+            message.delete();
         }
     }
 }
