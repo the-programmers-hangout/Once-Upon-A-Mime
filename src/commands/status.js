@@ -20,11 +20,11 @@ export class Status extends Command {
         });
 
         const developer = await client.users.fetch('448143136494190592');
-        const repo = 'https://github.com/DracTheDino/Mimey';
+        const repo = 'https://github.com/the-programmers-hangout/Once-Upon-A-Mime';
 
         const embed = new MessageEmbed()
             .setColor('AQUA')
-            .setTitle('Mimey')
+            .setTitle('Once-Upon-A-Mime')
             .setURL(repo)
             .setAuthor({
                 name: developer.tag,
