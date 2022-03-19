@@ -32,10 +32,14 @@ export class MessageListener extends Listener {
 
       // check for mime type
       if (!(await checkMimeType(fileUrl))) {
-        var mimeType = attachment.contentType.substring(
-          0,
-          attachment.contentType.indexOf(";")
-        );
+        if (!attachment.contentType) {
+          canDeleteMessage = true;
+        } else {
+          var mimeType = attachment.contentType.substring(
+            0,
+            attachment.contentType.indexOf(";")
+          );
+        }
       } else {
         var mimeType = (await checkMimeType(fileUrl)).mime;
       }
@@ -90,7 +94,7 @@ export class MessageListener extends Listener {
       }
     }
 
-    // you had two chances, attachment, and you failed both chances... forever begone!
+    // you had two chances, attachment, and if you failed both chances... forever begone!
     if (canDeleteMessage == true) {
       message.delete();
     }
