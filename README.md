@@ -1,20 +1,20 @@
 # Mimey
 
-File Listener Bot
+File listener bot for Discord.
 
-## 1
+## 1. Clone the repo
 
 ```
 git clone https://github.com/DracTheDino/Mimey.git
 ```
 
-## 2
+## 2. Install dependencies
 
 ```
 npm install
 ```
 
-## 3
+## 3. Run the bot
 
 ```
 node src/index.js
@@ -26,9 +26,11 @@ or if you're developing and tired of doing the above command again and again
 nodemon src/index.js
 ```
 
-## 4
+## 4. Configuration
 
-Configuration commands will be added in the future. As of now, you will have to work with a `config.json` file. Make a new `config.json` if it doesn't already exist and add this to it, replacing `<server_id>` with your server's ID and `<channel_id>` with the channel where you want to log usage of Mimey. (I am sorry you have to go through this pain.) That's it.
+The first thing to do is to add a `.env` file and add your bot token from your Discord developer portal page (see `.env.example` file).
+
+Configuration commands will be added in the future. As of now, you will have to work with a `config.json` file (see `.config.json.example` for an example config file, you can use it as a base). Make a new `config.json` if it doesn't already exist and add this to it, replacing `<server_id>` with your server's ID and `<channel_id>` with the channel where you want to log usage of Mimey.
 
 ```json
 {
