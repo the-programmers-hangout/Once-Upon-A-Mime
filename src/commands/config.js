@@ -1,18 +1,23 @@
-import {SubCommandPluginCommand} from '@sapphire/plugin-subcommands';
-import fs from 'fs';
+import { SubCommandPluginCommand } from "@sapphire/plugin-subcommands";
+import fs from "fs";
 
 export class Config extends SubCommandPluginCommand {
-    constructor(context, options) {
-        super(context, {
-            ...options,
-            subCommands: ['addAdminRole', 'removeAdminRole', 'addMime', 'removeMime', {input: 'show', default: 'true'}]
-        });
-    }
+  constructor(context, options) {
+    super(context, {
+      ...options,
+      subCommands: [
+        "addAdminRole",
+        "removeAdminRole",
+        "addMime",
+        "removeMime",
+        { input: "show", default: "true" },
+      ],
+    });
+  }
 
-
-    // This is low priority at the moment - please use config.json directly.
-    // TODO: clean up this mess and generalize the logic
-    /*
+  // This is low priority at the moment - please use config.json directly.
+  // TODO: clean up this mess and generalize the logic
+  /*
     async addAdminRole(message) {
         fs.readFile('./config.json', 'utf8', function (err, data) {
             if (err) {
@@ -159,5 +164,4 @@ export class Config extends SubCommandPluginCommand {
         });
     }
     */
-
-} 
+}
