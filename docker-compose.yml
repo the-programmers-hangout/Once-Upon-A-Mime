@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  bot:
+    container_name: OnceUponATime
+    image: theprogrammershangout/polly:latest
+    volumes:
+      - type: bind
+        source: ./config.json
+        target: /config.json
+    restart: always
+    env_file:
+      - .env
