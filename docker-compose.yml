@@ -1,8 +1,8 @@
 version: '3.8'
 services:
   bot:
-    container_name: OnceUponATime
-    image: theprogrammershangout/once-upon-a-time:latest
+    container_name: OnceUponAMime
+    image: theprogrammershangout/once-upon-a-mime:latest
     volumes:
       - type: bind
         source: ./config.json
