@@ -6,7 +6,7 @@ services:
     volumes:
       - type: bind
         source: ./config.json
-        target: /config.json
+        target: /usr/src/bot/config.json
     restart: always
     env_file:
       - .env
