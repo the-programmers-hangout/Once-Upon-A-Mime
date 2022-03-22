@@ -4,9 +4,7 @@ services:
     container_name: OnceUponAMime
     image: theprogrammershangout/once-upon-a-mime:latest
     volumes:
-      - type: bind
-        source: ./config.json
-        target: /usr/src/bot/config.json
+      - ${PWD}/config.json:/usr/src/bot/config.json
     restart: always
     env_file:
       - .env
