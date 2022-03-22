@@ -1,9 +1,11 @@
 FROM node:17
 
-WORKDIR /usr/src/app
-COPY package*.json ./
+RUN mkdir -p /usr/src/bot
+WORKDIR /usr/src/bot
 
+COPY package.json /usr/src/bot
 RUN npm install
-COPY . .
 
-CMD ["node", "/src/index.js"]
+COPY . /usr/src/bot
+
+CMD ["node", "./src/index.js"]
