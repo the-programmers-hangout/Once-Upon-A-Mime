@@ -139,7 +139,12 @@ export class MessageListener extends Listener {
       }
 
       const fullReplyMessage = finalReplyMessage.join("\n");
-      msgChannel.send(fullReplyMessage);
+      msgChannel.send({
+        content: fullReplyMessage,
+        allowedMentions: {
+          users: [author],
+        },
+      });
     }
 
     //Upload Code Snippet is the block is larger than 20 lines.
@@ -190,7 +195,12 @@ export class MessageListener extends Listener {
       //If anything has been uploaded, this should be true and will reply.
       if (shouldSendMessage) {
         const fullReplyMessage = finalReplyMessage.join("\n");
-        msgChannel.send(fullReplyMessage);
+        msgChannel.send({
+          content: fullReplyMessage,
+          allowedMentions: {
+            users: [author],
+          },
+        });
       }
     }
 
