@@ -138,16 +138,18 @@ export class MessageListener extends Listener {
         }
       }
 
-      const fullReplyMessage = finalReplyMessage.join("\n");
-      msgChannel.send({
-        content: fullReplyMessage,
-        allowedMentions: {
-          users: [author],
-        },
-      });
+      if (finalReplyMessage.length > 1) {
+        const fullReplyMessage = finalReplyMessage.join("\n");
+        msgChannel.send({
+          content: fullReplyMessage,
+          allowedMentions: {
+            users: [author],
+          },
+        });
+      }
     }
 
-    //Upload Code Snippet is the block is larger than 20 lines.
+    //Upload Code Snippet if the block is larger than 20 lines.
     if (attachments.length < 1 && codeBlocks !== null) {
       const logChannel = config[message.guildId].logChannel;
       let shouldSendMessage = false;
@@ -205,7 +207,7 @@ export class MessageListener extends Listener {
     }
 
     // you had two chances, attachment, and if you failed both chances... forever begone!
-    if (canDeleteMessage == true) {
+    if (canDeleteMessage == true || codeBlocks !== null) {
       message.delete();
     }
   }
