@@ -7,7 +7,7 @@ COPY package.json /usr/src/bot
 # Need something to bind onto
 COPY config.json.example /usr/src/bot/config.json
 
-RUN npm ci
+RUN npm i
 
 COPY . /usr/src/bot
 
