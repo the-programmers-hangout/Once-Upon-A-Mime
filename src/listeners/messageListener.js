@@ -29,6 +29,7 @@ export class MessageListener extends Listener {
     const logChannel = config[message.guildId].logChannel;
     const whitelistedMimes = config[message.guildId].whitelist;
     const uploadableMimes = config[message.guildId].uploadableMimes;
+    const blockMinSize = config[message.guildId].blockUploadMinSize;
 
     // handle guild which has not been setup
     if (!config[message.guildId]) {
@@ -55,7 +56,7 @@ export class MessageListener extends Listener {
           let codeArray = block.split("\n");
           codeblocksToBeRemoved.push(block);
 
-          if (codeArray.length >= 20) {
+          if (codeArray.length >= blockMinSize) {
             codeArray.splice(0, 1);
             const formattedCode = codeArray.join("\n");
             const url = await uploadFile(formattedCode);
