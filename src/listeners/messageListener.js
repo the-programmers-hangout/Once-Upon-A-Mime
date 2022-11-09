@@ -56,6 +56,8 @@ export class MessageListener extends Listener {
           codeblocksToBeRemoved.push(block);
 
           if (codeArray.length >= 20) {
+            canDeleteMessage = true;
+            
             codeArray.splice(0, 1);
             const formattedCode = codeArray.join("\n");
             const url = await uploadFile(formattedCode);
@@ -207,7 +209,7 @@ export class MessageListener extends Listener {
     }
 
     // you had two chances, attachment, and if you failed both chances... forever begone!
-    if (canDeleteMessage == true || codeBlocks !== null) {
+    if (canDeleteMessage == true) {
       message.delete();
     }
   }
