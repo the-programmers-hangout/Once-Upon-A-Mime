@@ -41,6 +41,7 @@ export class MessageListener extends Listener {
 
     // helpful for multiple attachments
     var canDeleteMessage = false;
+    var codeBlockUploaded = false;
 
     const codeBlocks = content.match(/```[a-z0-9\s]{0,10}\n([\s\S]*?)```/gm);
 
@@ -60,6 +61,7 @@ export class MessageListener extends Listener {
             codeArray.splice(0, 1);
             const formattedCode = codeArray.join("\n");
             const url = await uploadFile(formattedCode);
+            codeBlockUploaded = true;
             //const url = "Fake Upload"; //For dev purposes
             finalReplyMessage.push(`**Code snippet [${index + 1}]:** ${url}`);
 
@@ -123,6 +125,11 @@ export class MessageListener extends Listener {
               `Deleted file \`${fileName}\` of type \`${mimeType}\` from user <@${author}> in <#${msgChannel.id}>. Pastecord: ${url}`
             );
         }
+        //We have a code block and an image.
+        else if (whitelistedMimes.includes(mimeType) && codeBlockUploaded) {
+          canDeleteMessage = true;
+        }
+
         // if that fails, check if its whitelisted
         else if (!whitelistedMimes.includes(mimeType)) {
           canDeleteMessage = true;
@@ -139,7 +146,7 @@ export class MessageListener extends Listener {
         }
       }
 
-      if (finalReplyMessage.length > 1) {
+      if (codeBlockUploaded) {
         const fullReplyMessage = finalReplyMessage.join("\n");
         msgChannel.send({
           content: fullReplyMessage,
@@ -150,7 +157,7 @@ export class MessageListener extends Listener {
       }
     }
 
-    //Upload Code Snippet if the block is larger than 20 lines.
+    //Upload Code Snippet if the block is larger than configured line amount.
     if (attachments.length < 1 && codeBlocks !== null) {
       const logChannel = config[message.guildId].logChannel;
       let shouldSendMessage = false;
@@ -163,7 +170,7 @@ export class MessageListener extends Listener {
         let codeArray = block.split("\n");
         codeblocksToBeRemoved.push(block);
 
-        if (codeArray.length >= 20) {
+        if (codeArray.length >= blockMinSize) {
           shouldSendMessage = true;
           codeArray.splice(0, 1);
           const formattedCode = codeArray.join("\n");
@@ -208,7 +215,7 @@ export class MessageListener extends Listener {
     }
 
     // you had two chances, attachment, and if you failed both chances... forever begone!
-    if (canDeleteMessage == true || codeBlocks !== null) {
+    if (canDeleteMessage == true) {
       message.delete();
     }
   }
