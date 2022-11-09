@@ -1,5 +1,6 @@
 {
    "server_id": {
+        "blockUploadMinSize": 30,
         "logChannel": "channel_id",
         "whitelist": [
             "application/x-matroska",
