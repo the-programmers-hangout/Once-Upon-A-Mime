@@ -56,7 +56,7 @@ export class MessageListener extends Listener {
         for (const [index, block] of codeBlocks.entries()) {
           let codeArray = block.split("\n");
           codeblocksToBeRemoved.push(block);
-          
+
           if (codeArray.length >= blockMinSize) {
             codeArray.splice(0, 1);
             const formattedCode = codeArray.join("\n");
@@ -116,6 +116,7 @@ export class MessageListener extends Listener {
           const response = await fetch(fileUrl);
           const body = await response.text();
           const url = await uploadFile(body);
+          codeBlockUploaded = true;
           //const url = `${fileName}.uploaded`; //For dev purposes
           finalReplyMessage.push(`**${fileName}:** ${url}`);
 
