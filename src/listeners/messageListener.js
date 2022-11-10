@@ -89,6 +89,12 @@ export class MessageListener extends Listener {
             `**Message text content:** \`\`\`\n${finalMessageContent}\`\`\``
           );
         }
+      } else {
+        if (content.length > 1) {
+          finalReplyMessage.push(
+            `**Message text content:** \`\`\`\n${content}\`\`\``
+          );
+        }
       }
 
       for (const attachment of attachments) {
@@ -148,6 +154,7 @@ export class MessageListener extends Listener {
       }
 
       if (codeBlockUploaded) {
+        finalReplyMessage.push("");
         const fullReplyMessage = finalReplyMessage.join("\n");
         msgChannel.send({
           content: fullReplyMessage,
