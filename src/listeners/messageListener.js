@@ -154,7 +154,6 @@ export class MessageListener extends Listener {
       }
 
       if (codeBlockUploaded) {
-        finalReplyMessage.push("");
         const fullReplyMessage = finalReplyMessage.join("\n");
         msgChannel.send({
           content: fullReplyMessage,
