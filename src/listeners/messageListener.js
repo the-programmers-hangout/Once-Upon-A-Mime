@@ -45,11 +45,12 @@ export class MessageListener extends Listener {
 
     const codeBlocks = content.match(/```[a-z0-9\s]{0,10}\n([\s\S]*?)```/gm);
 
+    const finalReplyMessage = [
+      `Hey <@${author}>, your file(s) have been uploaded to Pastecord.`,
+    ];
+
     // loop through every attachment in message if there are any
     if (attachments.length >= 1) {
-      let finalReplyMessage = [
-        `Hey <@${author}>, your file(s) have been uploaded to Pastecord.`,
-      ];
       // Check FIRST, before we loop through any files if message includes any code blocks at all.
       if (codeBlocks !== null) {
         let codeblocksToBeRemoved = [];
@@ -89,6 +90,10 @@ export class MessageListener extends Listener {
             `**Message text content:** \`\`\`\n${finalMessageContent}\`\`\``
           );
         }
+      } else if (message.cleanContent.length > 1) {
+        finalReplyMessage.push(
+          `**Message text content:** \`\`\`\n${message.cleanContent}\`\`\``
+        );
       }
 
       for (const attachment of attachments) {
