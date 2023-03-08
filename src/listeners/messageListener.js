@@ -43,7 +43,7 @@ export class MessageListener extends Listener {
     var canDeleteMessage = false;
     var codeBlockUploaded = false;
 
-    const codeBlocks = content.match(/```[a-z0-9\s]{0,10}\n([\s\S]*?)```/gm);
+    const codeBlocks = content.match(/```[a-z0-9\s]{0,10}\n(.*?)```/gs);
 
     const finalReplyMessage = [
       `Hey <@${author}>, your file(s) have been uploaded to Pastecord.`,
@@ -59,8 +59,7 @@ export class MessageListener extends Listener {
           codeblocksToBeRemoved.push(block);
 
           if (codeArray.length >= blockMinSize) {
-            codeArray.splice(0, 1);
-            const formattedCode = codeArray.join("\n");
+            const formattedCode = codeArray.slice(1, -1).join("\n");
             const url = await uploadFile(formattedCode);
             codeBlockUploaded = true;
             //const url = "Fake Upload"; //For dev purposes
@@ -173,13 +172,12 @@ export class MessageListener extends Listener {
 
       let codeblocksToBeRemoved = [];
       for (const [index, block] of codeBlocks.entries()) {
-        let codeArray = block.split("\n");
+        const codeArray = block.split("\n");
         codeblocksToBeRemoved.push(block);
 
         if (codeArray.length >= blockMinSize) {
           shouldSendMessage = true;
-          codeArray.splice(0, 1);
-          const formattedCode = codeArray.join("\n");
+          const formattedCode = codeArray.slice(1, -1).join("\n");
           const url = await uploadFile(formattedCode);
           //const url = "Fake Upload";  //For Dev purposes
           finalReplyMessage.push(`**Code snippet [${index + 1}]:** ${url}`);
